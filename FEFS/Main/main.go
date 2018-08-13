@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/goinaction/code/FEFS/TanCeQi"
+	"../TanCeQi"  //这里使用了相对路径。网上有说不建议这样使用。 因为我的项目没有放置到GOPATH目录下。。
 	"math/rand"
 	"os"
 	"strconv"
@@ -10,8 +10,7 @@ import (
 	"time"
 )
 
-//全局变量声明
-
+//全局变量声明, 系统中探测器节点的数量，这里直接指定一个值，待以后添加数据库后，从数据库读取此值。
 var (
 	TCQ_TOTAL_COUNT int           = 100 //系统中探测器的总数量，此值要从数据库读取。
 	Tcqs            []TanCeQi.Tcq       //探测器对象 切片， 一开始是个空的。
@@ -33,11 +32,10 @@ func init() {
 	tcqs_init()
 
 	//3- 随机函数的种子
-
 	rand.Seed(time.Now().UnixNano())
 }
 
-// 探测器对象 切片初始化
+// 探测器对象 切片初始化，数据模拟，待以后添加数据库完善。
 func tcqs_init() {
 	name := "ALE"
 	for i := 1; i <= TCQ_TOTAL_COUNT; i++ {
@@ -55,20 +53,20 @@ func tcqs_init() {
 func main() {
 	fmt.Println("FEFS 电气火灾监控系统已经启动！！！！")
 
-	for _, tcq := range Tcqs {
-		fmt.Println(tcq)
-	}
+	//for _, tcq := range Tcqs {
+	//	fmt.Println(tcq)
+	//}
 
 	//定义一个探测器通讯状态的通道 缓冲10个
 	commWorkChain := make(chan tcqCommChain, 10)
 
 	wg.Add(1)
-	go commWorkCenter(commWorkChain)
-	//模拟串口通讯，每100ms，完成了一次和终端探测器的通讯任务。
+	go commWorkCenter(commWorkChain)  //探测器通讯状态处理线程。
 
+	//模拟串口通讯，每100ms，完成了一次和终端探测器的通讯任务。
 	commLoopId := 1 //通讯循环标从 1开始 到 TCQ_TOTAL_COUNT
 	fmt.Println("模拟1000次通讯，约100秒后结束！")
-	//模拟1000次循环和终端通讯，月100后，程序自动退出
+	//模拟1000次循环和终端通讯，约100后，程序自动退出
 	for tt := 1; tt < 1000; tt++ {
 		//采用随机函数，来模拟通讯是否正常，还是失败。
 		if commLoopId > TCQ_TOTAL_COUNT {
@@ -106,7 +104,7 @@ func commWorkCenter(comminfo chan tcqCommChain) {
 
 	//死循环
 	for {
-		comm, ok := <-comminfo
+		comm, ok := <-comminfo  //从通道取资源，阻塞方式
 		if !ok { //通道已经空了，并且已经关闭了
 			fmt.Printf("commWorkCenter shutting Down\n")
 			return
