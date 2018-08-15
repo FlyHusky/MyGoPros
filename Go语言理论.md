@@ -16,3 +16,15 @@ dur = int64(1000)  //编译器会报错 cannot use int64(1000) (type int64) as t
 ###            func和方法名之间增加了一个类型对象。<br>
 相关演示在180813中
 
+###Go语言的接口功能，对于书本中95页。<br>
+go 语言中可以定义接口，如下<br>
+	type Writer interface {<br>
+	    Write(p []byte) (n int, err error)<br>
+	}<br>
+
+### 如果其他类型实现了接口中定义的方法，那么这个类型就实现了这个接口<br>
+### 接口，可以作为一种类型，当做函数的参数值<br>
+如 func Fprintf(w io.Writer, format string, a ...interface{}) (n int, err error) {<br>
+实现了接口的类型值，可以做为参数代入 如上面的函数。 <br>
+相关演示在180814中
+
